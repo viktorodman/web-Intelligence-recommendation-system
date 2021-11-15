@@ -1,3 +1,5 @@
+import styles from '../styles/Selector.module.css'
+
 type SelectorProps = {
     description: string;
     options: any[];
@@ -5,9 +7,9 @@ type SelectorProps = {
 
 const Selector = ({ description,  options }: SelectorProps) => {
   return (
-    <div>
-        <label htmlFor={description.toLowerCase()}>{description}: </label>
-        <select name={description.toLowerCase()}>
+    <div className={styles.selectorWrapper}>
+        <label htmlFor={description.toLowerCase()} className={styles.label}>{description}</label>
+        <select name={description.toLowerCase()} className={styles.select}>
             { options.map(o => <option value={o.id} key={o.id}>{o.name}</option>) }
         </select>
     </div>

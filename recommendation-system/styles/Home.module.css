@@ -7,8 +7,29 @@
   min-height: 100vh;
   padding: 4rem 0;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  width: 80%;
+}
+
+.inputWrapper {
+  /* border: 1px solid rgb(173, 166, 166); */
+  border-bottom: 1px solid rgb(173, 166, 166);
+  /* border-radius: 10px; */
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  width: 80%;
+}
+
+.buttonsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  width: 80%;
+  border: 1px dotted red;
 }
 
 .footer {

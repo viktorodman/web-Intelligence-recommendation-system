@@ -2,9 +2,10 @@ import type { GetServerSideProps, InferGetServerSidePropsType, NextPage } from '
 import Head from 'next/head'
 import Image from 'next/image'
 import {User} from '../types/user'
-import Options from '../components/options'
 import styles from '../styles/Home.module.css'
 import Selector from '../components/selector'
+import TextInput from '../components/text-input'
+import SubmitButton from '../components/submit-button'
 
 const selectorAlgoData = {
   description: "Similarity",
@@ -12,12 +13,8 @@ const selectorAlgoData = {
   values: [{name: "Euclidean", id: 1}, {name: "Pearson", id:2}]
 }
 
-export const getServerSideProps: GetServerSideProps = async({
-  params,
-  res
-}) => {
+export const getServerSideProps: GetServerSideProps = async({ params,res }) => {
   const result = await fetch("http://localhost:3000/api/users")
-
   const data: User[] = await result.json()
 
   return {
@@ -38,7 +35,8 @@ const Home: NextPage = ({ data }: InferGetServerSidePropsType<typeof getServerSi
       </Head>
 
       <main className={styles.main}>
-      <div>
+        <div>
+          <div className={styles.inputWrapper}>
             <Selector
                 key="1"
                 description={"User"}
@@ -49,6 +47,15 @@ const Home: NextPage = ({ data }: InferGetServerSidePropsType<typeof getServerSi
                 description={selectorAlgoData.description}
                 options={selectorAlgoData.values}
             />
+            <TextInput
+              text={"Results"}
+            />
+          </div>
+          <div className={styles.buttonsWrapper}>
+            <SubmitButton text="Find top matching users"/>
+            <SubmitButton text="Find recommended movies"/>
+            <SubmitButton text="Find recommendations, item-based"/>
+          </div>
         </div>
       </main>
     </div>
