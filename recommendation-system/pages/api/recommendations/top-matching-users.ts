@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { MatchingUser } from '../../../types/matching-user'
-import { findTopMatchingUsers } from '../../../utils/euclidean-calculations'
+import { findTopMatchingUsersEuclidean } from '../../../utils/euclidean-calculations'
 
 
 
@@ -12,9 +12,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     if (!userId || !simMethod || !numOfResults){
         res.status(400).json([])  
-    } 
+    }
 
-    const data = await findTopMatchingUsers(Number(userId), Number(numOfResults))
+    if (Number(simMethod) === 1) {
 
-    res.status(200).json(data)
+        const data = await findTopMatchingUsersEuclidean(Number(userId), Number(numOfResults))
+        res.status(200).json(data)
+    } else if(Number(simMethod) === 2) {
+        
+        res.status(200).json([])
+    } else {
+        res.status(400).json([])
+    }
 }
