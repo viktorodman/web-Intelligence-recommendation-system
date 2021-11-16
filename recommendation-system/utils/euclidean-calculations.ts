@@ -1,33 +1,23 @@
 import { MatchingUser } from "../types/matching-user"
-import { Rating } from "../types/rating"
-import { User } from "../types/user"
-import { readRatingsFromFile, readUsersFromFile } from "./file-reader"
+import { UserRatings } from "../types/user-ratings"
+import { getUserRatings } from "./helper"
 
-type UserRatings = {
-    userId: number
-    username: string
-    ratings: Rating[]
-}
-
-export const findTopMatchingUsersEuclidean = async (userId: number, numOfResults: number): Promise<MatchingUser[]> => {
-    const allUsers: User[] = await readUsersFromFile()
-    const allRatings: Rating[] = await readRatingsFromFile()
-    const userRatings: UserRatings[] = getUserRatings(allUsers, allRatings)
+export const findTopMatchingUsersEuclidean = async (userId: number): Promise<MatchingUser[]> => {
+    const userRatings: UserRatings[] = await getUserRatings()
     const passedUserRating = userRatings.find(ur => ur.userId === userId)
     
-   
     if (!passedUserRating) {
         return []
     }
 
-    return getEuclideanScores(userRatings, passedUserRating).slice(0, numOfResults)
+    return getEuclideanScores(userRatings, passedUserRating)
 }
 
-export const findRecommendedMovies = async () => {
+export const findRecommendedMoviesEuclidean = async (userId: number) => {
     
 }
 
-export const findItemBasedRecommendations = async () => {
+export const findItemBasedRecommendationsEuclidean = async () => {
     
 }
 
@@ -52,16 +42,6 @@ const euclidean = (userA: UserRatings, userB: UserRatings): number => {
     return (1 / (1+sim))
 }
 
-const getUserRatings = (allUsers: User[], allRatings: Rating[]): UserRatings[] => {
-    return allUsers.map((user: User) => {
-        return {
-            userId: user.id,
-            username: user.name,
-            ratings: allRatings.filter((ur: Rating) => ur.userId === user.id)
-        }
-    })
-}
-
 const getEuclideanScores = (userRatings: UserRatings[], passedUserRating: UserRatings): MatchingUser[] => {
     const scores: MatchingUser[] = []
     userRatings.forEach(userRating => {
@@ -76,4 +56,6 @@ const getEuclideanScores = (userRatings: UserRatings[], passedUserRating: UserRa
 
     return scores.sort((a,b) => b.score - a.score)
 }
+
+
 
