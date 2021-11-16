@@ -1,11 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { readFile } from 'fs/promises'
+
 import { User } from '../../types/user'
+import { readUsersFromFile } from '../../utils/file-reader';
 
 
 
-async function readUsersFromFile(): Promise<User[]> {
+/* async function readUsersFromFile(): Promise<User[]> {
     const result = await readFile("data/users.csv", "utf8")
     const resultArray = result.split("\n").slice(1, -1)
 
@@ -15,7 +16,7 @@ async function readUsersFromFile(): Promise<User[]> {
     })
 
     return finalData
-}
+} */
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<User[]>) {
     const users = await readUsersFromFile();

@@ -35,7 +35,7 @@ const Home: NextPage = ({ data }: InferGetServerSidePropsType<typeof getServerSi
       </Head>
 
       <main className={styles.main}>
-        <div>
+        <div className={styles.userInputWrapper}>
           <div className={styles.inputWrapper}>
             <Selector
                 key="1"
