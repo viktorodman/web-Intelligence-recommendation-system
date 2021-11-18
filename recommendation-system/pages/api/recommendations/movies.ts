@@ -1,12 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { MatchingUser } from '../../../types/matching-user'
-import { findTopMatchingUsersEuclidean } from '../../../utils/euclidean-calculations'
-import { findTopMatchingUsersPearson } from '../../../utils/pearson-calculations'
+import { MatchingMovie } from '../../../types/matching-movie'
+import { findRecommendedMoviesEuclidean } from '../../../utils/euclidean-calculations'
+import { findRecommendedMoviesPearson } from '../../../utils/pearson-calculations'
 
 
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<MatchingUser[]>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<MatchingMovie[]>) {
     const { userId,  simMethod, numOfResults } = req.query
 
     console.log(userId,simMethod,numOfResults)
@@ -16,10 +16,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
     
     if (Number(simMethod) === 1) {
-        const data = await findTopMatchingUsersEuclidean(Number(userId))
-        res.status(200).json(data.slice(0, Number(numOfResults)))
+        const data = await findRecommendedMoviesEuclidean(Number(userId))
+        res.status(200).json(data.slice(0,Number(numOfResults)))
     } else if(Number(simMethod) === 2) {
-        const data = await findTopMatchingUsersPearson(Number(userId))
+        const data = await findRecommendedMoviesPearson(Number(userId))
         res.status(200).json(data.slice(0, Number(numOfResults)))
     } else {
         res.status(400).json([])

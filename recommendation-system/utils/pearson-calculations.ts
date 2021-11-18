@@ -1,6 +1,9 @@
+import { MatchingMovie } from "../types/matching-movie";
 import { MatchingUser } from "../types/matching-user";
+import { SimilarityRating } from "../types/similarity-rating";
 import { UserRatings } from "../types/user-ratings";
-import { getUserRatings } from "./helper";
+import { readMoviesFromFile } from "./file-reader";
+import { getUserRatings, getWeightedScores } from "./helper";
 
 
 export const findTopMatchingUsersPearson = async (userId: number): Promise<MatchingUser[]> => {
@@ -14,14 +17,36 @@ export const findTopMatchingUsersPearson = async (userId: number): Promise<Match
     return getPearsonScores(userRatings, passedUserRating)
 }
 
-const getPearsonScores = (userRatings: UserRatings[], passedUserRating: UserRatings): MatchingUser[] => {
-    const scores: MatchingUser[] = []
+export const findRecommendedMoviesPearson = async (userId: number): Promise<MatchingMovie[]> => {
+    const userRatings: UserRatings[] = await getUserRatings()
+    const passedUserRating = userRatings.find(ur => ur.userId === userId)
+    const movies = await readMoviesFromFile()
+
+    const filterOutAlreadySeenMovies = movies.filter(x => {
+        return !(passedUserRating?.ratings.find(f => f.movieId === x.id))
+    })
+
+    
+    
+    if (!passedUserRating) {
+        return []
+    }
+    
+    const similarityScores = getPearsonScores(userRatings, passedUserRating)
+    const calcWeightedScores = getWeightedScores(similarityScores, filterOutAlreadySeenMovies)
+    
+    return calcWeightedScores.sort((a,b) => b.score - a.score)
+}
+
+const getPearsonScores = (userRatings: UserRatings[], passedUserRating: UserRatings): SimilarityRating[] => {
+    const scores: SimilarityRating[] = []
     userRatings.forEach(userRating => {
         if (userRating.userId !== passedUserRating.userId && passedUserRating) {
             scores.push({
                 id: userRating.userId,
                 name: userRating.username,
-                score: pearson(passedUserRating, userRating)
+                score: pearson(passedUserRating, userRating),
+                ratings: userRating.ratings
             })
         }
     })
