@@ -1,6 +1,5 @@
 import { MatchingMovie } from "../types/matching-movie"
 import { MatchingUser } from "../types/matching-user"
-import { Movie } from "../types/movie"
 import { SimilarityRating } from "../types/similarity-rating"
 import { UserRatings } from "../types/user-ratings"
 import { readMoviesFromFile } from "./file-reader"
@@ -16,6 +15,13 @@ type MovieWithUsers = {
     title: string
     users: UserMovieScore[]
 }
+
+type ItemRecommendation = {
+    title: string 
+    id: number
+    score: number
+}
+
 
 export const findTopMatchingUsersEuclidean = async (userId: number): Promise<MatchingUser[]> => {
     const userRatings: UserRatings[] = await getUserRatings()
@@ -52,51 +58,69 @@ export const findRecommendedMoviesEuclidean = async (userId: number): Promise<Ma
 export const findItemBasedRecommendationsEuclidean = async (userId: number): Promise<any[]> => {
     const movies = await readMoviesFromFile()
     const userRatings: UserRatings[] = await getUserRatings()
-    const passedUserRating = userRatings.find(ur => ur.userId === userId)
+    const passedUserRatings = userRatings.find(ur => ur.userId === userId)
 
-    const temp: MovieWithUsers[] = movies.map(movie => ({ id: movie.id, title: movie.title, users: [] }))
+    const allMoviesWithRatings: MovieWithUsers[] = movies.map(movie => ({ id: movie.id, title: movie.title, users: [] }))
 
     userRatings.forEach(user => {
         user.ratings.forEach(rating => {
-            const movie = temp.find(f => f.id === rating.movieId)
+            const movie = allMoviesWithRatings.find(f => f.id === rating.movieId)
 
             movie?.users.push({score: rating.score, username: user.username})
         })
     })
 
-    const filterOutAlreadySeenMovies = temp.filter(x => {
-        return !(passedUserRating?.ratings.find(f => f.movieId === x.id))
+    console.log(passedUserRatings?.ratings)
+
+    const alreadySeenMovies = allMoviesWithRatings.filter(movieWithRating => {
+        return (passedUserRatings?.ratings.find(f => f.movieId === movieWithRating.id))
     })
 
-    const temp2 = getEuclideanScoresItemBased(temp, filterOutAlreadySeenMovies)
+    const possibleRecommendations = allMoviesWithRatings.filter(movieWithRating => {
+        return !(passedUserRatings?.ratings.find(f => f.movieId === movieWithRating.id))
+    })
+
+    if(!passedUserRatings) {
+        return []
+    }
 
 
-    /* return filterOutAlreadySeenMovies.sort((a, b) => b.users.length - a.users.length) */
-    return temp2
+    const recommendedItems = getEuclideanScoresItemBased(alreadySeenMovies, possibleRecommendations, passedUserRatings)
+
+
+    return recommendedItems.sort((a,b) => b.score - a.score);
 }
 
-const getEuclideanScoresItemBased = (userRatings: MovieWithUsers[], passedUserRating: MovieWithUsers[]): any[] => {
-    const scores:any[][] = []
 
-    userRatings.forEach(ur => {
-        const temp:any[] = []
-        passedUserRating.forEach(pur => {
-            if (ur.id !== pur.id) {
-                temp.push({
-                    idyeah: pur.id,
-                    id: ur.id,
-                    name: ur.title,
-                    nameyeah: pur.title,
-                    score: euclideanItemBased(ur, pur)
-                })
-            }
+
+const getEuclideanScoresItemBased = (alreadySeenMovies: MovieWithUsers[], possibleRecommendations: MovieWithUsers[], passedUserRatings: UserRatings): ItemRecommendation[] => {
+    const recommendedMovies:ItemRecommendation[] = []
+
+    possibleRecommendations.forEach(possibleRecommendation => {
+        const currentMovie: ItemRecommendation = {
+            title: possibleRecommendation.title,
+            id: possibleRecommendation.id,
+            score: 0
+        } 
+        let totalWeight = 0;
+        let totalSim = 0;
+
+        alreadySeenMovies.forEach(movie => {
+            const userMovieRating = passedUserRatings.ratings.find(m => m.movieId === movie.id)
+            let userMovieScore = userMovieRating ? userMovieRating.score : 0
+
+            let currentSim = euclideanItemBased(movie, possibleRecommendation)
+            totalSim += currentSim
+            totalWeight += (userMovieScore * currentSim)
         })
-        scores.push(temp)
+        currentMovie.score = (totalWeight/totalSim)
+        recommendedMovies.push(currentMovie)
     })
 
 
-    return scores
+    return recommendedMovies
 }
+
 
 const euclideanItemBased = (movieA: MovieWithUsers, movieB: MovieWithUsers): number => {
     let sim = 0
