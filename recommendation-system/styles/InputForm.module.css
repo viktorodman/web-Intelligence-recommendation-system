@@ -11,6 +11,7 @@
 .wrapper label {
     padding-bottom: 5px;
     font-size: 20px;
+    color: #fffafa;;
 }
 
 .wrapper select {
@@ -18,7 +19,7 @@
     margin: auto;
     padding: 5px 15px 5px 5px;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 1px solid rgb(220, 217, 217);
     border-radius: 5px;
     letter-spacing: 2px;
 }

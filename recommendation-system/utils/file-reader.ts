@@ -2,10 +2,11 @@ import { readFile } from 'fs/promises'
 import { Movie } from '../types/movie'
 import { Rating } from '../types/rating'
 import { User } from '../types/user'
+import { getFilePath } from './helper'
 
 
 export const readUsersFromFile = async (): Promise<User[]> => {
-    const result = await readFile("data/small/users.csv", "utf8")
+    const result = await readFile(`${getFilePath()}users.csv`, "utf8")
     const resultArray = result.split("\n").slice(1, -1)
 
     const finalData = resultArray.map(user => {
@@ -17,7 +18,7 @@ export const readUsersFromFile = async (): Promise<User[]> => {
 }
 
 export const readRatingsFromFile = async (): Promise<Rating[]> => {
-    const result = await readFile("data/small/ratings.csv", "utf8")
+    const result = await readFile(`${getFilePath()}ratings.csv`, "utf8")
     const resultArray = result.split("\n").slice(1, -1)
 
     const finalData = resultArray.map(rating => {
@@ -29,7 +30,7 @@ export const readRatingsFromFile = async (): Promise<Rating[]> => {
 }
 
 export const readMoviesFromFile = async (): Promise<Movie[]> => {
-    const result = await readFile("data/small/movies.csv", "utf8")
+    const result = await readFile(`${getFilePath()}movies.csv`, "utf8")
     const resultArray = result.split("\n").slice(1, -1)
 
     const finalData = resultArray.map(movie => {

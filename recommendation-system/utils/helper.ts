@@ -15,6 +15,13 @@ type MovieWithWeight = {
     totalWeight: number
 }
 
+export const getFilePath = () => {
+    const SMALL = "data/small/"
+    const LARGE = "data/"
+
+    return LARGE
+}
+
 export const getUserRatings = async (): Promise<UserRatings[]> => {
     const allUsers: User[] = await readUsersFromFile()
     const allRatings: Rating[] = await readRatingsFromFile()
