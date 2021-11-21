@@ -1,12 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { Match } from '../../../types/match'
 import { MatchingUser } from '../../../types/matching-user'
 import { findTopMatchingUsersEuclidean } from '../../../utils/euclidean-calculations'
 import { findTopMatchingUsersPearson } from '../../../utils/pearson-calculations'
 
 
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<MatchingUser[]>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<Match[]>) {
     const { userId,  simMethod, numOfResults } = req.query
 
     console.log(userId,simMethod,numOfResults)
