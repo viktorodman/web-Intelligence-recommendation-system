@@ -22,7 +22,7 @@ export const readRatingsFromFile = async (): Promise<Rating[]> => {
 
     const finalData = resultArray.map(rating => {
         const movieRating = rating.split(";")
-        return { userId: Number(movieRating[0]), movieId: Number(movieRating[1]), score: Number(movieRating[2]) }
+        return { userId: Number(movieRating[0]), movieId: Number(movieRating[1]), score: Number(movieRating[2])}
     })
 
     return finalData
