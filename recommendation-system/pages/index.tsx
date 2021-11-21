@@ -5,6 +5,7 @@ import styles from '../styles/Home.module.css'
 import InputForm from '../components/input-form'
 import { useState } from 'react'
 import { Match } from '../types/match'
+import DataTable from '../components/data-table'
 
 export const getServerSideProps: GetServerSideProps = async({ params,res }) => {
   const result = await fetch("http://localhost:3000/api/users")
@@ -21,7 +22,7 @@ export const getServerSideProps: GetServerSideProps = async({ params,res }) => {
 
 
 const Home: NextPage = ({ users }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const [resultData, setResultData] = useState<Match[]>([]);
+  const [resultData, setResultData] = useState<Match | null>(null);
   
   const handleDataRequest = async (userId: string, sim: string, numOfResults: string, apiPath: string) => {
     const requestString = `http://localhost:3000/api/recommendations/${apiPath}?userId=${userId}&simMethod=${sim}&numOfResults=${numOfResults}`
@@ -30,8 +31,11 @@ const Home: NextPage = ({ users }: InferGetServerSidePropsType<typeof getServerS
     const response = await fetch(requestString)
     const result = await response.json()
 
-    console.log(result)
+    if (response.status !== 400) {
+      setResultData(result)
+    }
 
+    console.log(result)
 
   }
 
@@ -48,6 +52,9 @@ const Home: NextPage = ({ users }: InferGetServerSidePropsType<typeof getServerS
           users={users}
           formSubmit={(userId: string, sim: string, numOfResults: string, apiPath: string) => handleDataRequest(userId, sim, numOfResults, apiPath)}
         />
+        {
+          resultData !== null ? <DataTable tableData={resultData}/> : null
+        }
       </main>
     </div>
   )

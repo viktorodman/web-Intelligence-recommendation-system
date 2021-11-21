@@ -1,12 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { Match } from '../../../types/match'
 import { MatchingMovie } from '../../../types/matching-movie'
 import { findItemBasedRecommendationsEuclidean, findRecommendedMoviesEuclidean } from '../../../utils/euclidean-calculations'
 import { findRecommendedMoviesPearson } from '../../../utils/pearson-calculations'
 
 
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<MatchingMovie[]>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<Match | []>) {
     const { userId,  simMethod, numOfResults } = req.query
 
     console.log(userId,simMethod,numOfResults)
@@ -16,11 +17,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
     
     if (Number(simMethod) === 1) {
-        const data = await findItemBasedRecommendationsEuclidean(Number(userId))
-        res.status(200).json(data)
-    } else if(Number(simMethod) === 2) {
-        const data = await findRecommendedMoviesPearson(Number(userId))
-        res.status(200).json(data.slice(0, Number(numOfResults)))
+        const itemBasedRecommendation = await findItemBasedRecommendationsEuclidean(Number(userId))
+
+        const match: Match = {
+            typeOfMatch: "Movies",
+            data: itemBasedRecommendation.map(ibr => ({id: ibr.id, score: ibr.score, title: ibr.title})).slice(0, Number(numOfResults))
+        }
+
+        res.status(200).json(match)
     } else {
         res.status(400).json([])
     }

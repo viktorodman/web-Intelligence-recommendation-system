@@ -55,7 +55,7 @@ export const findRecommendedMoviesEuclidean = async (userId: number): Promise<Ma
     return calcWeightedScores.sort((a,b) => b.score - a.score)
 }
 
-export const findItemBasedRecommendationsEuclidean = async (userId: number): Promise<any[]> => {
+export const findItemBasedRecommendationsEuclidean = async (userId: number): Promise<ItemRecommendation[]> => {
     const movies = await readMoviesFromFile()
     const userRatings: UserRatings[] = await getUserRatings()
     const passedUserRatings = userRatings.find(ur => ur.userId === userId)

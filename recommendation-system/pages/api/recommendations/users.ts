@@ -7,7 +7,7 @@ import { findTopMatchingUsersPearson } from '../../../utils/pearson-calculations
 
 
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Match[]>) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse<Match | []>) {
     const { userId,  simMethod, numOfResults } = req.query
 
     console.log(userId,simMethod,numOfResults)
@@ -17,11 +17,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
     
     if (Number(simMethod) === 1) {
-        const data = await findTopMatchingUsersEuclidean(Number(userId))
-        res.status(200).json(data.slice(0, Number(numOfResults)))
+        const topMatchingUsers = await findTopMatchingUsersEuclidean(Number(userId))
+
+        const match: Match = {
+            typeOfMatch: "User",
+            data: topMatchingUsers.map(tm => ({id: tm.id, score: tm.score, title: tm.name})).slice(0, Number(numOfResults))
+        }
+
+
+        res.status(200).json(match)
+
     } else if(Number(simMethod) === 2) {
-        const data = await findTopMatchingUsersPearson(Number(userId))
-        res.status(200).json(data.slice(0, Number(numOfResults)))
+        const topMatchingUsers = await findTopMatchingUsersPearson(Number(userId))
+
+        const match: Match = {
+            typeOfMatch: "User",
+            data: topMatchingUsers.map(tm => ({id: tm.id, score: tm.score, title: tm.name})).slice(0, Number(numOfResults))
+        }
+
+
+        res.status(200).json(match)
     } else {
         res.status(400).json([])
     }
