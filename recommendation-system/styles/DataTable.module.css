@@ -1,0 +1,26 @@
+.wrapper {
+    padding-top: 30px;
+    width: 100%;
+}
+
+.dataTable {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    padding-top: 20px;
+}
+
+.dataTable td, .dataTable th {
+    border: 1px solid #888686;
+    text-align: left;
+    padding: 8px;
+}
+
+.dataTable th {
+    background-color: #ccc;
+    color: #1D1F20;
+}
+
+/* .dataTable tr:nth-child(even) {
+    background-color: #888686;
+} */
